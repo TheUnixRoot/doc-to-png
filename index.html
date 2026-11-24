@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DocToPNG Studio - Editor de Texto & SVG a PNG Transparente</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@600&family=Inter:wght@400;600;800&family=Montserrat:wght@400;700;900&family=Orbitron:wght@600;900&family=Playfair+Display:ital,wght@0,600;1,600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Header Bar -->
+    <header class="top-nav">
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 7V4h16v3M9 20h6M12 4v16"/>
+        </svg>
+        <div class="brand-text">
+          <h1>DocToPNG <span>Studio</span></h1>
+          <p class="subtitle">Editor Tipográfico & SVG Transparente</p>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <!-- Aspect Ratio Selector -->
+        <div class="aspect-group" title="Proporción del Lienzo">
+          <button class="aspect-btn active" data-ratio="3:4" id="ratio-3-4">
+            <span class="ratio-box r-3-4"></span> 3:4
+          </button>
+          <button class="aspect-btn" data-ratio="1:1" id="ratio-1-1">
+            <span class="ratio-box r-1-1"></span> 1:1
+          </button>
+          <button class="aspect-btn" data-ratio="4:3" id="ratio-4-3">
+            <span class="ratio-box r-4-3"></span> 4:3
+          </button>
+        </div>
+
+        <!-- Export Buttons -->
+        <div class="export-group">
+          <button class="btn btn-outline" id="btn-camera-toggle" title="Abrir cámara del teléfono">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <span class="desktop-text">Cámara / Fotos</span>
+          </button>
+          <button class="btn btn-primary" id="btn-export-png" title="Exportar imagen en PNG transparente de alta resolución">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            <span>Exportar PNG</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="main-workspace">
+      <!-- Left Sidebar: Controls & Tools -->
+      <aside class="sidebar" id="sidebar">
+        <!-- Tabs Navigation -->
+        <nav class="nav-tabs">
+          <button class="tab-btn active" data-tab="tab-text">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
+            Texto & Fuentes
+          </button>
+          <button class="tab-btn" data-tab="tab-svg">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            Elementos SVG
+          </button>
+          <button class="tab-btn" data-tab="tab-layers">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Capas (<span id="layer-count">1</span>)
+          </button>
+          <button class="tab-btn" data-tab="tab-settings">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Ajustes
+          </button>
+        </nav>
+
+        <!-- Tab 1: Text & Fonts -->
+        <section class="tab-panel active" id="tab-text">
+          <div class="panel-section">
+            <div class="section-header">
+              <h3>Texto Activo</h3>
+              <button class="btn btn-sm btn-accent" id="btn-add-text">+ Nuevo Texto</button>
+            </div>
+            <textarea id="text-input" rows="3" placeholder="Escribe tu texto aquí...">FOTOGRAFÍA
+URBANA</textarea>
+          </div>
+
+          <!-- TTF Font Management -->
+          <div class="panel-section">
+            <div class="section-header">
+              <label for="font-family-select">Fuente Tipográfica</label>
+              <label class="btn-file-label" title="Cargar cualquier fuente .ttf / .otf / .woff2">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                Subir .TTF
+                <input type="file" id="font-upload" accept=".ttf,.otf,.woff,.woff2" style="display:none">
+              </label>
+            </div>
+            <select id="font-family-select" class="styled-select">
+              <optgroup label="Fuentes Personalizadas (.TTF)" id="custom-fonts-optgroup">
+                <!-- Injected dynamically when TTF uploaded -->
+              </optgroup>
+              <optgroup label="Fuentes Modernas Incluidas">
+                <option value="'Bebas Neue', sans-serif" selected>Bebas Neue (Display Impact)</option>
+                <option value="'Montserrat', sans-serif">Montserrat (Bold & Clean)</option>
+                <option value="'Inter', sans-serif">Inter (Minimalista)</option>
+                <option value="'Space Grotesk', sans-serif">Space Grotesk (Editorial Tech)</option>
+                <option value="'Playfair Display', serif">Playfair Display (Elegante)</option>
+                <option value="'Caveat', cursive">Caveat (Manuscrita / Firma)</option>
+                <option value="'Orbitron', sans-serif">Orbitron (Futurista)</option>
+              </optgroup>
+              <optgroup label="Fuentes del Sistema">
+                <option value="sans-serif">Sans-Serif</option>
+                <option value="serif">Serif</option>
+                <option value="monospace">Monospace</option>
+                <option value="cursive">Cursive</option>
+                <option value="Impact">Impact</option>
+              </optgroup>
+            </select>
+            <div class="loaded-font-badge" id="loaded-font-indicator" style="display:none">
+              <span>Fuente TTF activa:</span> <strong id="loaded-font-name"></strong>
+            </div>
+          </div>
+
+          <!-- Typography Controls -->
+          <div class="panel-section">
+            <div class="control-row">
+              <div class="control-group">
+                <label>Tamaño (<span id="font-size-val">72</span>px)</label>
+                <input type="range" id="font-size" min="4" max="240" value="72">
+              </div>
+              <div class="control-group">
+                <label>Espaciado (<span id="letter-spacing-val">2</span>px)</label>
+                <input type="range" id="letter-spacing" min="-5" max="30" value="2">
+              </div>
+            </div>
+
+            <div class="control-row">
+              <div class="control-group">
+                <label>Interlineado (<span id="line-height-val">1.1</span>)</label>
+                <input type="range" id="line-height" min="0.7" max="2.5" step="0.05" value="1.1">
+              </div>
+              <div class="control-group">
+                <label>Rotación (<span id="rotation-val">0</span>°)</label>
+                <input type="range" id="text-rotation" min="-180" max="180" value="0">
+              </div>
+            </div>
+
+            <!-- Alignment and Style Buttons -->
+            <div class="btn-group-toggle mt-2">
+              <button class="toggle-btn" id="btn-align-left" title="Alinear a la izquierda">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="6" x2="3" y2="6"/><line x1="15" y1="12" x2="3" y2="12"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+              </button>
+              <button class="toggle-btn active" id="btn-align-center" title="Centrado">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="6"/><line x1="21" y1="12" x2="3" y2="12"/><line x1="18" y1="18" x2="6" y2="18"/></svg>
+              </button>
+              <button class="toggle-btn" id="btn-align-right" title="Alinear a la derecha">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="12" x2="9" y2="12"/><line x1="21" y1="18" x2="7" y2="18"/></svg>
+              </button>
+              <button class="toggle-btn" id="btn-align-justify" title="Justificado">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="10" x2="3" y2="10"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+              </button>
+              <button class="toggle-btn" id="btn-font-bold" title="Negrita"><b>B</b></button>
+              <button class="toggle-btn" id="btn-font-italic" title="Cursiva"><i>I</i></button>
+              <button class="toggle-btn" id="btn-font-uppercase" title="Mayúsculas">aA</button>
+            </div>
+          </div>
+
+          <!-- Color, Outline, Glow -->
+          <div class="panel-section">
+            <h4>Color y Efectos</h4>
+            <div class="color-grid">
+              <div class="color-item">
+                <label>Color Texto</label>
+                <div class="color-picker-wrap">
+                  <input type="color" id="text-color" value="#FFFFFF">
+                  <span id="text-color-hex">#FFFFFF</span>
+                </div>
+              </div>
+              <div class="color-item">
+                <label>Opacidad (<span id="opacity-val">100</span>%)</label>
+                <input type="range" id="text-opacity" min="0" max="100" value="100">
+              </div>
+            </div>
+
+            <div class="collapsible-group mt-3">
+              <div class="toggle-check">
+                <input type="checkbox" id="enable-stroke">
+                <label for="enable-stroke">Borde / Contorno (Stroke)</label>
+              </div>
+              <div class="stroke-controls sub-controls" id="stroke-controls">
+                <div class="control-row">
+                  <input type="color" id="stroke-color" value="#000000">
+                  <div class="flex-grow">
+                    <label>Grosor: <span id="stroke-width-val">4</span>px</label>
+                    <input type="range" id="stroke-width" min="1" max="30" value="4">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="collapsible-group mt-2">
+              <div class="toggle-check">
+                <input type="checkbox" id="enable-shadow" checked>
+                <label for="enable-shadow">Sombra / Resplandor</label>
+              </div>
+              <div class="shadow-controls sub-controls" id="shadow-controls">
+                <div class="control-row">
+                  <input type="color" id="shadow-color" value="#000000">
+                  <div class="flex-grow">
+                    <label>Difuminado: <span id="shadow-blur-val">12</span>px</label>
+                    <input type="range" id="shadow-blur" min="0" max="60" value="12">
+                  </div>
+                </div>
+                <div class="control-row mt-2">
+                  <div class="flex-grow">
+                    <label>Offset X: <span id="shadow-offset-x-val">0</span>px</label>
+                    <input type="range" id="shadow-offset-x" min="-40" max="40" value="0">
+                  </div>
+                  <div class="flex-grow">
+                    <label>Offset Y: <span id="shadow-offset-y-val">4</span>px</label>
+                    <input type="range" id="shadow-offset-y" min="-40" max="40" value="4">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Background Box / Pill -->
+            <div class="collapsible-group mt-2">
+              <div class="toggle-check">
+                <input type="checkbox" id="enable-bg-box">
+                <label for="enable-bg-box">Caja de Fondo (Highlight / Pill)</label>
+              </div>
+              <div class="bg-box-controls sub-controls" id="bg-box-controls">
+                <div class="control-row">
+                  <input type="color" id="bg-box-color" value="#000000">
+                  <div class="flex-grow">
+                    <label>Opacidad Fondo: <span id="bg-box-opacity-val">75</span>%</label>
+                    <input type="range" id="bg-box-opacity" min="0" max="100" value="75">
+                  </div>
+                </div>
+                <div class="control-row mt-2">
+                  <div class="flex-grow">
+                    <label>Padding: <span id="bg-box-pad-val">16</span>px</label>
+                    <input type="range" id="bg-box-pad" min="4" max="60" value="16">
+                  </div>
+                  <div class="flex-grow">
+                    <label>Radio: <span id="bg-box-radius-val">12</span>px</label>
+                    <input type="range" id="bg-box-radius" min="0" max="60" value="12">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Tab 2: SVG & PNG Graphics -->
+        <section class="tab-panel" id="tab-svg">
+          <div class="panel-section">
+            <div class="section-header">
+              <h3>Subir SVG o Imagen PNG</h3>
+            </div>
+            <div class="upload-dropzone" id="svg-dropzone">
+              <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+              </svg>
+              <p>Arrastra tu archivo <strong>.PNG o .SVG</strong> aquí o haz clic para seleccionarlo</p>
+              <input type="file" id="svg-upload" accept=".svg,.png,image/svg+xml,image/png" style="display:none">
+            </div>
+            <button class="btn btn-outline w-100 mt-2" id="btn-paste-svg">
+              Pegar Código SVG sin procesar
+            </button>
+          </div>
+
+          <div class="panel-section">
+            <div class="section-header">
+              <h3>Biblioteca de Iconos & Marcos SVG</h3>
+            </div>
+            <p class="section-desc">Selecciona marcos, sellos de fecha, marcas fotográficas y badges vectoriales listos para usar:</p>
+            <div class="svg-library-grid" id="svg-presets-container">
+              <!-- Preset SVGs injected via JS -->
+            </div>
+          </div>
+
+          <!-- Active SVG Controls -->
+          <div class="panel-section" id="active-svg-controls" style="display:none">
+            <div class="section-header">
+              <h3>Ajustes del SVG Seleccionado</h3>
+              <button class="btn btn-xs btn-danger" id="btn-delete-svg">Eliminar</button>
+            </div>
+            <div class="control-row">
+              <div class="control-group">
+                <label>Escala: <span id="svg-scale-val">100</span>%</label>
+                <input type="range" id="svg-scale" min="10" max="400" value="100">
+              </div>
+              <div class="control-group">
+                <label>Rotación: <span id="svg-rotation-val">0</span>°</label>
+                <input type="range" id="svg-rotation" min="-180" max="180" value="0">
+              </div>
+            </div>
+            <div class="control-row mt-2">
+              <div class="control-group">
+                <label>Opacidad: <span id="svg-opacity-val">100</span>%</label>
+                <input type="range" id="svg-opacity" min="0" max="100" value="100">
+              </div>
+              <div class="control-group">
+                <label>Tinte de Color</label>
+                <div class="color-picker-wrap">
+                  <input type="color" id="svg-tint-color" value="#FFFFFF">
+                  <input type="checkbox" id="svg-enable-tint" title="Aplicar tinte monocromático">
+                  <label for="svg-enable-tint" style="font-size:11px; margin-left:4px;">Teñir</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tab 3: Layers Management -->
+        <section class="tab-panel" id="tab-layers">
+          <div class="panel-section">
+            <div class="section-header">
+              <h3>Capas del Diseño</h3>
+              <div class="layer-actions-top">
+                <button class="btn btn-xs btn-outline" id="btn-layer-up" title="Subir capa">▲</button>
+                <button class="btn btn-xs btn-outline" id="btn-layer-down" title="Bajar capa">▼</button>
+                <button class="btn btn-xs btn-danger" id="btn-layer-del" title="Eliminar capa seleccionada">✕</button>
+              </div>
+            </div>
+            <div class="layers-list" id="layers-list">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Tab 4: Settings & Canvas Output -->
+        <section class="tab-panel" id="tab-settings">
+          <div class="panel-section">
+            <h3>Resolución y Calidad</h3>
+            <div class="control-group mt-2">
+              <label>Calidad de Exportación:</label>
+              <select id="export-scale" class="styled-select">
+                <option value="1">Estándar (1x - Rápido)</option>
+                <option value="2" selected>Ultra HD (2x - Recomendado para fotos)</option>
+                <option value="3">Impresión / 3x (3x - Máximo detalle)</option>
+              </select>
+            </div>
+            <div class="dimension-preview mt-2">
+              <span>Dimensiones de salida:</span>
+              <strong id="output-dim-label">2160 × 2880 px (3:4)</strong>
+            </div>
+          </div>
+
+          <div class="panel-section">
+            <h3>Visualización en Lienzo</h3>
+            <div class="toggle-check mt-2">
+              <input type="checkbox" id="show-rule-of-thirds" checked>
+              <label for="show-rule-of-thirds">Guías de Composición (Regla de Tercios)</label>
+            </div>
+            <div class="toggle-check mt-2">
+              <input type="checkbox" id="show-center-guides" checked>
+              <label for="show-center-guides">Ejes Centrales de Alineación</label>
+            </div>
+            <div class="toggle-check mt-2">
+              <input type="checkbox" id="transparent-mode" checked>
+              <label for="transparent-mode"><strong>Modo PNG Transparente</strong> (Sin fondo de color)</label>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <!-- Center: Interactive Canvas Studio Viewport -->
+      <div class="canvas-viewport" id="viewport">
+        <!-- Floating Canvas Toolbar -->
+        <div class="floating-toolbar">
+          <button class="icon-btn" id="btn-zoom-fit" title="Ajustar a pantalla">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+          </button>
+          <button class="icon-btn" id="btn-zoom-in" title="Acercar">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+          </button>
+          <button class="icon-btn" id="btn-zoom-out" title="Alejar">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+          </button>
+          <div class="toolbar-divider"></div>
+          <button class="icon-btn" id="btn-center-element" title="Centrar elemento activo">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button class="icon-btn" id="btn-toggle-grid" title="Alternar cuadrícula transparente">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          </button>
+          <div class="toolbar-divider"></div>
+          <span class="zoom-badge" id="zoom-badge">100%</span>
+        </div>
+
+        <!-- The Canvas Stage Container -->
+        <div class="canvas-stage-wrapper" id="stage-wrapper">
+          <div class="canvas-checkerboard-container" id="canvas-container">
+            <!-- Hidden video feed for camera capture -->
+            <video id="camera-stream" playsinline autoplay muted style="display:none"></video>
+            <!-- The Master Interactive Canvas -->
+            <canvas id="studio-canvas"></canvas>
+            <!-- Overlay visual selection box -->
+            <div class="selection-overlay" id="selection-overlay"></div>
+          </div>
+        </div>
+
+        <!-- Mobile Floating Quick-Action Bar -->
+        <div class="mobile-quick-bar">
+          <button class="quick-btn" id="m-btn-text">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
+            Texto
+          </button>
+          <button class="quick-btn" id="m-btn-ttf">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            .TTF
+          </button>
+          <button class="quick-btn" id="m-btn-svg">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            SVG
+          </button>
+          <button class="quick-btn" id="m-btn-camera">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Foto
+          </button>
+          <button class="quick-btn accent" id="m-btn-export">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            PNG
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Modal: Camera & Photo Helper -->
+    <div class="modal" id="camera-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Tomar Foto o Cargar Imagen de Fondo</h3>
+          <button class="close-btn" id="btn-close-camera">✕</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-desc">
+            Puedes tomar una foto directamente con la cámara del dispositivo o subir una imagen de tu galería para encuadrar tu texto y SVG en proporciones 4:3, 1:1 o 3:4.
+          </p>
+
+          <div class="camera-preview-box" id="camera-preview-container">
+            <video id="live-camera-video" playsinline autoplay muted></video>
+            <div class="camera-reticle"></div>
+          </div>
+
+          <div class="camera-controls">
+            <button class="btn btn-outline" id="btn-start-camera">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Activar Cámara
+            </button>
+            <button class="btn btn-primary" id="btn-capture-photo" disabled>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
+              Tomar Foto
+            </button>
+            <button class="btn btn-outline" id="btn-switch-camera" style="display:none">
+              Cambiar Cámara (Frontal/Trasera)
+            </button>
+          </div>
+
+          <div class="modal-divider"><span>O</span></div>
+
+          <div class="upload-photo-row">
+            <label class="btn btn-outline w-100">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              Cargar Foto desde Archivos / Galería
+              <input type="file" id="bg-photo-upload" accept="image/*" style="display:none">
+            </label>
+            <button class="btn btn-danger-outline mt-2 w-100" id="btn-remove-bg-photo" style="display:none">
+              Quitar Foto de Fondo
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: SVG Raw Paste -->
+    <div class="modal" id="svg-paste-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Pegar Código SVG</h3>
+          <button class="close-btn" id="btn-close-svg-paste">✕</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-desc">Pega aquí el código <code>&lt;svg ...&gt; ... &lt;/svg&gt;</code>:</p>
+          <textarea id="raw-svg-textarea" rows="8" placeholder="<svg viewBox='0 0 100 100'>...</svg>"></textarea>
+          <div class="modal-actions mt-3">
+            <button class="btn btn-outline" id="btn-cancel-svg-paste">Cancelar</button>
+            <button class="btn btn-primary" id="btn-confirm-svg-paste">Insertar SVG al Lienzo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Export Success & Sharing -->
+    <div class="modal" id="export-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>¡PNG Generado con Éxito!</h3>
+          <button class="close-btn" id="btn-close-export">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="export-preview-box">
+            <img id="export-preview-img" alt="Vista previa PNG">
+          </div>
+          <div class="export-meta-info" id="export-meta-info"></div>
+
+          <div class="export-modal-actions mt-3">
+            <button class="btn btn-primary w-100" id="btn-modal-download">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              Descargar PNG Transparente
+            </button>
+            <div class="action-row mt-2">
+              <button class="btn btn-outline flex-grow" id="btn-modal-copy">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copiar Imagen
+              </button>
+              <button class="btn btn-outline flex-grow" id="btn-modal-share" style="display:none">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                Compartir
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
